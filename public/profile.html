@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Profile</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <button onclick="logout()">Logout</button>
+      <button onclick="location.href='change-password.html'">Change Password</button>
+    </div>
+
+    <h2>My Profile</h2>
+
+    <input id="name">
+    <input id="email">
+
+    <button onclick="update()">Update Profile</button>
+  </div>
+
+<script>
+const token = localStorage.getItem("token");
+if (!token) location.href = "login.html";
+
+fetch("/api/profile", {
+  headers: { Authorization: "Bearer " + token }
+})
+.then(r => r.json())
+.then(d => {
+  name.value = d.name;
+  email.value = d.email;
+});
+
+function update() {
+  fetch("/api/profile", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({
+      name: name.value,
+      email: email.value
+    })
+  }).then(r => r.json()).then(d => alert(d.message));
+}
+
+function logout() {
+  localStorage.removeItem("token");
+  location.href = "login.html";
+}
+</script>
+</body>
+</html>
